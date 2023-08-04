@@ -145,7 +145,7 @@ generate() {
           if [ "${VERBOSE}" == "true" ]; then
             echo "Unzipping ${temp_file} to ${resource_folder} ..."
           fi
-          unzip -q -o -j "${temp_file}" -d "${resource_folder}"
+          unzip -q -o "${temp_file}" -d "${resource_folder}"
         fi
       done
     done

@@ -1,0 +1,2 @@
+cs224n-natural-language-processing-with-deep-learning/2023/assignments/a3/code/data/** filter=lfs diff=lfs merge=lfs -text
+cs224n-natural-language-processing-with-deep-learning/2023/assignments/a4/code/zh_en_data/** filter=lfs diff=lfs merge=lfs -text
