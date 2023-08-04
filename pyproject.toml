@@ -1,0 +1,115 @@
+[tool.ruff]
+fix = true
+
+select = [
+  # pyflakes
+  "F",
+  # pycodestyle
+  "E", "W",
+  # flake8-2020
+  "YTT",
+  # flake8-bugbear
+  "B",
+  # flake8-quotes
+  "Q",
+  # flake8-debugger
+  "T10",
+  # flake8-gettext
+  "INT",
+  # pylint
+  "PLC", "PLE", "PLR", "PLW",
+  # misc lints
+  "PIE",
+  # flake8-pyi
+  "PYI",
+  # tidy imports
+  "TID",
+  # implicit string concatenation
+  "ISC",
+  # type-checking imports
+  "TCH",
+  # comprehensions
+  "C4",
+  # pygrep-hooks
+  "PGH"
+]
+ignore = [
+    # Only works with python >=3.10
+    "B905",
+    # Too many arguments to function call
+    # "PLR0913",
+]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    # cs224n
+    "code",
+    "handout"
+]
+per-file-ignores = {}
+
+# Same as Black.
+line-length = 120
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.10.
+target-version = "py310"
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
+[tool.black]
+line-length = 120
+target-version = ["py37", "py38", "py39", "py310", "py311"]
+extend-exclude = '''
+/(
+  # The following are specific to Black, you probably don't want those.
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+force-exclude = '''
+/(
+  # The following are specific to Black, you probably don't want those.
+  | code
+  | handout
+)/
+'''
+
+[tool.isort]
+skip = [".gitignore"]
+extend_skip = [".md", ".json"]
+line_length = 120
+skip_gitignore = true
+extend_skip_glob = ["**/code/*", "**/handout/*"]

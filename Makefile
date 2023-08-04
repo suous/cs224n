@@ -1,3 +1,8 @@
+lint:
+	isort .
+	black .
+	ruff check .
+
 check-scripts:
 	shellcheck *.sh
 

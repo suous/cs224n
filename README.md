@@ -6,6 +6,7 @@
 
 - [Assignment 1 (6%): Introduction to word vectors](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a1)
   - [Code](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a1/code)
+  - [Additional Notes](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a1/additional-notes)
 - [Assignment 2 (12%): Derivatives and implementation of word2vec algorithm](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a2)
   - [Code](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a2/code)
   - [Handout](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a2/handout)
