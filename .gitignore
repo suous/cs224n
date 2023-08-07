@@ -161,3 +161,10 @@ cython_debug/
 # Macos
 .DS_Store
 .ruff_cache
+.vscode
+# cs224n
+_minted-*
+out
+datasets
+saved_*.npy
+saved_*.pickle

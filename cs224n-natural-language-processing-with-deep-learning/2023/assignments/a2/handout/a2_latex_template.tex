@@ -187,7 +187,21 @@ Prove that the naive-softmax loss (Equation \ref{naive-softmax}) is the same as 
 Your answer should be one line. You may describe your answer in words.
 \begin{shaded}
 \begin{answer}
+    \begin{equation}
+        \bm y_w =
+        \begin{cases}
+            1 &w=o \\
+            0 &w\neq o
+        \end{cases}\label{eq:1a1}
+    \end{equation}
 
+    \begin{equation}
+        \begin{align}
+            -\sum_{w\in{Vocab}}\bm y_w\log(\hat{\bm y}_w) &= -\left(\mathbf{1}\log(\hat{\bm y}_o) + \sum_{{\substack{w\in{Vocab} \\ w\neq o}}}\mathbf{0}\log(\hat{\bm y}_w)\right) \\
+            &= -\left(\log(\hat{\bm y}_o) + 0 + \cdots + 0\right) \\
+            &= -\log(\hat{\bm y}_o)
+        \end{align}\label{eq:1a2}
+    \end{equation}
 \end{answer}
 \end{shaded}
 
@@ -213,6 +227,89 @@ Hint: Consider the case where $\mathbf{u}_x = \alpha\mathbf{u}_y$ for some words
 
 \begin{shaded}
 \begin{answer}
+    For convenience, we will use the word vector as a row vector instead of a column vector like most of the deep learning packages.
+    \begin{center}
+        \begin{tabular}{ |c|c|c| }
+            \hline
+            \bm u_o =
+            \begin{bmatrix}
+                u_{o_1} && \cdots && u_{o_n}
+            \end{bmatrix}_{1\times n} & \bm v_c =
+            \begin{bmatrix}
+                v_{c_1} && \cdots && v_{c_n}
+            \end{bmatrix}_{1\times n} & \bm U =
+            \begin{bmatrix}
+                u_{11} & \cdots & u_{1n} \\
+                \vdots & \ddots & \cdots \\
+                u_{m1} & \cdots & u_{mn}
+            \end{bmatrix}_{m\times n} \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+    \begin{equation}
+        P(O=o|C=c) = \frac{exp(\bm v_c\bm u_o^T)}{\sum_{w\in{Vocab}}exp(\bm v_c\bm u_w^T)}\label{eq:1b1}
+    \end{equation}
+
+    \begin{equation}
+        \begin{align}
+            J(\bm v_c,o,\bm U) &= -\log{P(O=o|C=c)} \\
+            &= -\left(\log\left(exp(\bm v_c\bm u_o^T)\right) - \log{\left(\sum_{w\in{Vocab}}exp(\bm v_c\bm u_w^T)\right)} \right) \\
+            &= \log{\left(\sum_{w\in{Vocab}}exp(\bm v_c\bm u_w^T)\right)} - \bm v_c\mathbf{u}_o^T \\
+            &= \log{\left(\sum exp(\bm v_c\bm U^T)\right)} - \bm v_c\mathbf{u}_o^T \\
+        \end{align}\label{eq:1b3}
+    \end{equation}
+
+    (i)
+
+    \begin{equation}
+        \begin{align}
+            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm v_c}} &= \frac{1}{\sum_{w\in{Vocab}}exp(\bm v_c\bm u_w^T)}\cdot\frac{\partial{\sum_{x\in{Vocab}}exp(\bm v_c\bm u_x^T)}}{\partial{\bm v_c}} - \bm u_o \\
+            &=\frac{\sum_{x\in{Vocab}}exp(\bm v_c\bm u_x^T) \cdot \bm u_x}{\sum_{w\in{Vocab}}exp(\bm v_c\bm u_w^T)} - \bm u_o \\
+            &=\sum_{x\in{Vocab}} \frac{exp(\bm v_c\bm u_x^T)}{\sum_{w\in{Vocab}}exp(\bm v_c\bm u_w^T)} \cdot \bm u_x - \bm u_o \\
+            &=\sum_{x\in{Vocab}} P(O=x|C=c) \cdot \bm u_x - \bm u_o \\
+            &=\hat{\bm y}\bm U-\bm y\bm U \\
+            &=(\hat{\bm y}- \bm y)\bm U
+        \end{align}\label{eq:1b4}
+    \end{equation}
+
+    (ii)
+
+    \begin{enumerate}
+        \item When $\hat{\bm y} = \bm y$, the whole gradient $\delta \bm v_c$ is equal to zero, and the model can make a perfect prediction on the outside word $o$. \\
+        \item When $\sum_{k=1}^{n} (\hat{y}_k- y_k)*u_{ik}=0$, $\delta v_{c_i}=0$, the $i$-th dimension of the word vector $v_c$ will not be updated.
+    \end{enumerate}
+
+    (iii)
+
+    According to the gradient update rule, the gradient of $\bm v_c$ is determined by the dot product of $\mathbf{U}$ and $\hat{\mathbf{y}}- \mathbf{y}$,
+
+    \begin{equation}
+        \begin{align}
+            \bm v_c &= \bm v_c - \eta \cdot \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm v_c}} \\
+            &= \bm v_c - \eta \cdot (\hat{\bm y}- \bm y)\bm U
+        \end{align}\label{eq:1b5}
+    \end{equation}
+
+    And the ith dimension of $\bm v_c$ will be updated when $\sum_{k=1}^{n} (\hat{y}_k- y_k)*u_{ik}\neq0$.
+    Therefore, as long as $\hat{\bm y}\neq \bm y$, the word vector $\bm v_c$ will be updated.
+
+    (iv)
+
+    Classify phrases as being positive or negative is a binary classification problem.
+    The output layer of the model should be a sigmoid function, and the loss function should be the binary cross-entropy loss function.
+
+    \begin{equation}
+        \begin{align}
+            \hat{\bm y} &= \sigma(\bm w \bm u) \\
+            J(\bm u,\bm w) &= -\sum_{k=1}^{n} y_k\log{\hat{y}_k} + (1-y_k)\log{(1-\hat{y}_k)}
+        \end{align}\label{eq:1b7}
+    \end{equation}
+
+    \begin{enumerate}
+        \item For the well trained word2vec model with large word vector dimension, the L2 normalization will not affect the performance of the model too much. Because it is unlikely that the word vector will change it's direction too much after the normalization. \\
+        \item For the model with smaller word vector dimension, the L2 normalization will affect the performance of the model. Because the word meaning may change after the normalization. For example $\mathbf{u}_x =\alpha \mathbf{u}_y$ after the normalization, where $\alpha$ is a constant.
+    \end{enumerate}
 
 \end{answer}
 \end{shaded}
@@ -222,6 +319,30 @@ Hint: Consider the case where $\mathbf{u}_x = \alpha\mathbf{u}_y$ for some words
 
 \begin{shaded}
 \begin{answer}
+    
+    if $\bm u_w = \bm u_o$:
+
+    \begin{equation}
+        \begin{align}
+            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm u_w}} &= \frac{1}{\sum_{w\in{Vocab}}exp(\bm u_w^T\bm v_c)}\cdot\frac{\partial{\sum_{x\in{Vocab}}exp(\bm v_c\bm u_x^T)}}{\partial{\bm u_w}} - \bm v_c  \\
+            &=\frac{\sum_{x\in{Vocab}}exp(\bm v_c\bm u_x^T) \cdot \bm v_c}{\sum_{w\in{Vocab}}exp(\bm v_c\bm u_w^T)} - \bm v_c \\
+            &=\sum_{x\in{Vocab}} \frac{exp(\bm v_c\bm u_x^T)}{\sum_{w\in{Vocab}}exp(\bm v_c\bm u_w^T)} \cdot \bm v_c - \bm v_c \\
+            &=\sum_{x\in{Vocab}} P(O=x|C=c) \cdot \bm v_c - \bm v_c \\
+            &= \hat{\bm y}^T \cdot \bm v_c - \bm v_c
+        \end{align}\label{eq:1c1}
+    \end{equation}
+
+    if $\bm u_w \neq \bm u_o$:
+
+    \begin{equation}
+        \begin{align}
+            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm u_w}} &= \frac{1}{\sum_{w\in{Vocab}}exp(\bm v_c\bm u_w^T)}\cdot\frac{\partial{\sum_{x\in{Vocab}}exp(\bm v_c\bm u_x^T)}}{\partial{\bm u_w}}  \\
+            &=\frac{\sum_{x\in{Vocab}}exp(\bm v_c\bm u_x^T) \cdot \bm v_c}{\sum_{w\in{Vocab}}exp(\bm v_c\bm u_w^T)}  \\
+            &=\sum_{x\in{Vocab}} \frac{exp(\bm v_c\bm u_x^T)}{\sum_{w\in{Vocab}}exp(\bm v_c\bm u_w^T)} \cdot \bm v_c  \\
+            &=\sum_{x\in{Vocab}} P(O=x|C=c) \cdot \bm v_c  \\
+            &= \hat{\bm y}^T \cdot \bm v_c
+        \end{align}\label{eq:1c2}
+    \end{equation}
 
 \end{answer}
 \end{shaded}
@@ -231,6 +352,15 @@ Hint: Consider the case where $\mathbf{u}_x = \alpha\mathbf{u}_y$ for some words
 
 \begin{shaded}
 \begin{answer}
+
+    \begin{equation}
+        \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm U}}
+        \begin{bmatrix}
+            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm u_1}} & \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm u_2}} & \cdots & \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm u_n}}
+        \end{bmatrix} \\
+        =(\hat{\bm y} - \bm y)^T \cdot \bm v_c
+        \label{eq:1d}
+    \end{equation}
 
 \end{answer}
 \end{shaded}
@@ -254,6 +384,14 @@ Where $x$ is a scalar and $0<\alpha <1$, please compute the derivative of $f(x)$
 \begin{shaded}
 \begin{answer}
 
+    \begin{equation}
+        f^\prime(x) =
+        \begin{cases}
+            1 & x>=0 \\
+            \alpha & x < 0
+        \end{cases}\label{eq:1e}
+    \end{equation}
+
 \end{answer}
 \end{shaded}
 
@@ -269,6 +407,15 @@ Please compute the derivative of $\sigma(x)$ with respect to $x$, where $x$ is a
 
 \begin{shaded}
 \begin{answer}
+
+    \begin{equation}
+        \begin{align}
+            \sigma^\prime(x) &= \frac{e^x(e^x+1)-e^xe^x}{(e^{x}+1)^2} \\
+            &=\frac{e^{x}}{e^{x}+1} - \frac{(e^{x})^2}{(e^{x}+1)^2} \\
+            &=\frac{e^{x}}{e^{x}+1}(1-\frac{e^{x}}{e^{x}+1}) \\
+            &=\sigma(x)(1-\sigma(x))
+        \end{align}\label{eq:1f}
+    \end{equation}
 
 \end{answer}
 \end{shaded}
@@ -296,6 +443,64 @@ Caveat: So far we have looked at re-using quantities and approximating softmax w
 \begin{shaded}
 \begin{answer}
 
+    \begin{equation}
+        J(\bm v_c,o,\bm U) = -\log\left(\sigma(\bm v_c\bm u_o^T)\right) - \sum_{s=1}^K\log\left( \sigma(-\bm v_c\bm u_{w_s}^T) \right) \label{eq:1g}
+    \end{equation}
+
+    (i)
+
+    \begin{equation}
+        \begin{align}
+            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm v_c}} &= -\frac{1}{\sigma(\bm v_c\bm u_o^T)}\cdot\frac{\partial{\sigma(\bm v_c\bm u_o^T)}}{\partial{\bm v_c}} - \sum_{s=1}^K\frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot\frac{\partial{ \sigma(-\bm v_c\bm u_{w_s}^T)}}{\partial{\bm v_c}} \\
+            &= -\frac{1}{\sigma(\bm v_c\bm u_o^T)}\cdot \sigma(\bm v_c\bm u_o^T)\left(1-\sigma(\bm v_c\bm u_o^T)\right)\cdot\bm u_o - \sum_{s=1}^K\frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot \sigma(-\bm v_c\bm u_{w_s}^T) \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot (-\bm u_{w_s}) \\
+            &= -\left(1-\sigma(\bm v_c\bm u_o^T)\right)\cdot\bm u_o - \sum_{s=1}^K \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot (-\bm u_{w_s}) \\
+            &= -\left( \left(1-\sigma(\bm v_c\bm u_o^T)\right)\cdot\bm u_o - \sum_{s=1}^K \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot \bm u_{w_s} \right)
+        \end{align}\label{eq:1g1}
+    \end{equation}
+
+    \begin{equation}
+        \begin{align}
+            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm u_o}} &= -\frac{1}{\sigma(\bm v_c\bm u_o^T)}\cdot\frac{\partial{\sigma(\bm v_c\bm u_o^T)}}{\partial{\bm u_o}} \\
+            &= -\frac{1}{\sigma(\bm v_c\bm u_o^T)}\cdot \sigma(\bm v_c\bm u_o^T)\left(1-\sigma(\bm v_c\bm u_o^T)\right)\cdot\bm v_c \\
+            &= -\left(1-\sigma(\bm v_c\bm u_o^T)\right)^T\cdot\bm v_c
+        \end{align}\label{eq:1g2}
+    \end{equation}
+
+    \begin{equation}
+        \begin{align}
+            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm u_{w_s}}} &= - \frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot\frac{\partial{ \sigma(-\bm v_c\bm u_{w_s}^T)}}{\partial{\bm u_{w_s}}} \\
+            &= - \frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot \sigma(-\bm v_c\bm u_{w_s}^T) \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot \bm v_c \\
+            &= - \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right)^T \cdot \bm v_c
+        \end{align}\label{eq:1g3}
+    \end{equation}
+
+    (ii)
+
+    \begin{equation}
+        \bm U_{o,\{w_1,\cdots,w_K\}}=
+        \begin{bmatrix}
+            \bm u_o & -\bm u_{w_1} & \cdots & -\bm u_{w_K}
+        \end{bmatrix}\label{eq:1g4}
+    \end{equation}
+
+    \begin{equation}
+        \delta = 1-\sigma(\bm v_c\bm U_{o,\{w_1,\cdots,w_K\}}^T)\label{eq:1g5}
+    \end{equation}
+
+    \begin{equation}
+        \begin{cases}
+            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm v_c}} & = -\delta \bm U_{o,\{w_1,\cdots,w_K\}}\\
+            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm U}} & = -\delta^T \bm v_c
+        \end{cases}\label{eq:1g6}
+    \end{equation}
+
+    (iii)
+
+    \begin{enumerate}
+        \item The matrix $\bm U_{o,\{w_1,\cdots,w_K\}}$ can be significant smaller than the vocab matrix $\bm U$ according to the number of negative samples $K$.
+        \item The negative sampling loss function is more efficient to compute than the naive softmax loss function.
+    \end{enumerate}
+
 \end{answer}
 \end{shaded}
 
@@ -313,6 +518,20 @@ Compute the partial derivative of $\bm J_{\text{neg-sample}}$ with respect to a 
 
 \begin{shaded}
 \begin{answer}
+
+    \begin{equation}
+        \begin{align}
+            J(\mathbf{v}_c,o,\bm U) &= -\log\left(\sigma(\bm v_c\bm u_o^T)\right) - \sum_{\substack{j=1\\w_j\neq w_s}}^K\log\left( \sigma(-\bm v_c\bm u_{w_j}^T) \right) - \sum_{\substack{j=1\\w_j= w_s}}^K\log\left( \sigma(-\bm v_c\bm u_{w_j}^T) \right)
+        \end{align}\label{eq:1h1}
+    \end{equation}
+
+    \begin{equation}
+        \begin{align}
+            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm u_{w_s}}} &= - \sum^K_{\substack{j=1\\w_j= w_s}}\frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot\frac{\partial{ \sigma(-\bm v_c\bm u_{w_s}^T)}}{\partial{\bm u_{w_s}}} \\
+            &= - \sum^K_{\substack{j=1\\w_j= w_s}}\frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot \sigma(-\bm v_c\bm u_{w_s}^T) \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot \bm v_c \\
+            &= - \sum^K_{\substack{j=1\\w_j= w_s}}\left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot \bm v_c
+        \end{align}\label{eq:1h2}
+    \end{equation}
 
 \end{answer}
 \end{shaded}
@@ -336,6 +555,30 @@ Write your answers in terms of ${\frac{\partial \bm J(\bm v_c, w_{t+j}, \bm U)}{
 
 \begin{shaded}
 \begin{answer}
+
+    (i)
+
+    \begin{equation}
+        \frac{\partial{J_{skip\_gram}(\bm v_c,w_{t-m},\cdots,w_{t+m},\bm U)}}{\partial{\bm U}}
+        =
+        \sum_{\substack{-m\leq j\leq m \\ j \neq 0}} \frac{\partial{J(\bm v_c,w_{t+j},\bm U)}}{\partial{\bm U}}\label{eq:1i1}
+    \end{equation}
+
+    (ii)
+
+    \begin{equation}
+        \frac{\partial{J_{skip\_gram}(\bm v_c,w_{t-m},\cdots,w_{t+m},\bm U)}}{\partial{\bm v_c}}
+        =
+        \sum_{\substack{-m\leq j\leq m \\ j \neq 0}} \frac{\partial{J(\bm v_c,w_{t+j},\bm U)}}{\partial{\bm v_c}}\label{eq:1i2}
+    \end{equation}
+
+    (iii)
+
+    \begin{equation}
+        \frac{\partial{J_{skip\_gram}(\mathbf{v}_c,w_{t-m},\cdots,w_{t+m},\bm U)}}{\partial{\bm v_w}}
+        =
+        0 (\text{when } w\neq c)\label{eq:1i3}
+    \end{equation}
 
 \end{answer}
 \end{shaded}
@@ -384,8 +627,29 @@ Note: If you are using Windows and have trouble running the .sh scripts used in 
     
     After 40,000 iterations, the script will finish and a visualization for your word vectors will appear. It will also be saved as \texttt{word\_vectors.png} in your project directory. \textbf{Include the plot in your homework write up.} In at most three sentences, briefly explain what you see in the plot. This may include, but is not limited to, observations on clusters and words that you expect to cluster but do not.
     
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../code/word_vectors.png}
+    \caption{Word Vectors}
+    \label{fig:word_vectors}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../code/cost_curve.png}
+    \caption{Cost Curve}
+    \label{fig:cost_curve}
+\end{figure}
+
 \begin{shaded}
 \begin{answer}
+
+    \begin{enumerate}
+        \item The words that have similar meanings are clustered together, such as ``amazing" and ``wonderful'', ``brilliant'' and ``cool'', ``woman'' and ``female'', ``coffee'' and ``tea''.
+        \item The words that have opposite meanings are clustered together, such as ``enjoyable" and ``annoying'', ``great'' and ``boring''.
+        \item The word ``hail'' is far away from other words. Maybe the word ``hail'' is not used frequently in the dataset.
+        \item The word ``dump'' and ``queen'' are close to each other. Maybe the word ``dump'' is used frequently in the context of ``queen''.
+    \end{enumerate}
 
 \end{answer}
 \end{shaded}

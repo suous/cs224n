@@ -19,6 +19,8 @@ def sigmoid(x):
 
     ### YOUR CODE HERE (~1 Line)
 
+    s = 1/(1+np.exp(-x))
+
     ### END YOUR CODE
 
     return s
@@ -64,6 +66,26 @@ def naiveSoftmaxLossAndGradient(
     ### Please use the provided softmax function (imported earlier in this file)
     ### This numerically stable implementation helps you avoid issues pertaining
     ### to integer overflow. 
+
+    # n: num_vercors
+    # m: num_words
+
+    # v_c ->  centerWordVec:    (n,)    ->   (1,n)
+    # o   ->  outsideWordIdx:   scalar
+    # U   ->  outsideVectors:   (m,n)
+    # z   ->  np.dot(U, v_c):   (m,)    ->   (1,m)
+
+    centerWordVec = centerWordVec.reshape((1, -1))                      # (1,n)
+    z = centerWordVec @ outsideVectors.T                                # (1,m)
+    u_o = outsideVectors[[outsideWordIdx]]                              # (1,n)
+    loss = (np.log(np.exp(z).sum()) - centerWordVec @ u_o.T).squeeze()  # scalar
+
+    y_hat = softmax(z)                                                  # (1,m)
+    y = np.zeros_like(y_hat)                                            # (1,m)
+    y[0, outsideWordIdx] = 1                                            # (1,m)
+
+    gradCenterVec = ((y_hat -y) @ outsideVectors).squeeze()             # (1,n)
+    gradOutsideVecs = (y_hat-y).T @ centerWordVec                       # (m,n)
 
     ### END YOUR CODE
 
@@ -112,6 +134,41 @@ def negSamplingLossAndGradient(
 
     ### Please use your implementation of sigmoid in here.
 
+    # n: num_vercors
+    # m: num_words
+
+    # v_c ->  centerWordVec:    (n,)    ->   (1,n)
+    # o   ->  outsideWordIdx:   scalar
+    # U   ->  outsideVectors:   (m,n)
+    # z   ->  np.dot(U, v_c):   (m,)    ->   (1,m)
+
+    centerWordVec = centerWordVec.reshape((1, -1))               # (1,n)
+    u_o = outsideVectors[[outsideWordIdx]]                       # (1,n)
+    u_n = outsideVectors[negSampleWordIndices]                   # (K,n)
+
+    # step by step
+    # z_o = sigmoid(centerWordVec @ u_o.T)                         # (1,1)
+    # z_n = sigmoid(-centerWordVec @ u_n.T)                        # (1,K)
+    # loss = -np.log(z_o) - np.log(z_n).sum(axis=1)                # scalar
+    # gradCenterVec = -((1-z_o)*u_o - (1-z_n)@u_n).squeeze()       # (1,n)
+    # g_o = -(1-z_o).T @ centerWordVec                             # (1,n)
+    # g_n = -(1-z_n).T @ centerWordVec                             # (K,n)
+    # grads = np.vstack((g_o, -g_n))                               # (K+1,n)
+    # gradOutsideVecs = np.zeros_like(outsideVectors)              # (m,n)
+    # np.add.at(gradOutsideVecs, indices, grads)
+
+    u = np.vstack((u_o, -u_n))                                   # (K+1,n)
+    z_u = sigmoid(centerWordVec @ u.T)                           # (1,K+1)
+    loss = -np.log(z_u).sum()                                    # scalar
+    delta = 1 - z_u                                              # (1,K+1)
+
+    gradCenterVec = -(delta@u).squeeze()                         # (1,n)
+
+    gradOutsideVecs = np.zeros_like(outsideVectors)              # (m,n)
+    grads = -delta.T @ centerWordVec                             # (K+1,n)
+    grads[1:] *= -1                                              # (K+1,n)
+    np.add.at(gradOutsideVecs, indices, grads)
+
     ### END YOUR CODE
 
     return loss, gradCenterVec, gradOutsideVecs
@@ -157,6 +214,20 @@ def skipgram(currentCenterWord, windowSize, outsideWords, word2Ind,
     gradOutsideVectors = np.zeros(outsideVectors.shape)
 
     ### YOUR CODE HERE (~8 Lines)
+
+    centerWordIdx = word2Ind[currentCenterWord]
+    centerWordVec = centerWordVectors[centerWordIdx]
+
+    for outsideWordIdx in (word2Ind[w] for w in outsideWords):
+        _loss, gradCenterVec, gradOutsideVec = word2vecLossAndGradient(
+            centerWordVec=centerWordVec,
+            outsideWordIdx=outsideWordIdx,
+            outsideVectors=outsideVectors,
+            dataset=dataset
+        )
+        loss += _loss
+        gradCenterVecs[centerWordIdx] += gradCenterVec
+        gradOutsideVectors += gradOutsideVec
 
     ### END YOUR CODE
     
