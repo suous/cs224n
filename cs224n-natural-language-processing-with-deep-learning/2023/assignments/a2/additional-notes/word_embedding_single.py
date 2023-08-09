@@ -308,8 +308,8 @@ class SkipGram:
         grad_center_vec = -(delta @ u).squeeze()  # (1,n)
 
         grad_outside_vec = np.zeros_like(self.outside_word_vectors)  # (m,n)
-        grads = -delta.T @ center_word_vectors  # (K+1,n)
-        grads[1:] *= -1  # (K+1,n)
+        grads = delta.T @ center_word_vectors  # (K+1,n)
+        grads[0] *= -1  # (K+1,n)
         np.add.at(grad_outside_vec, indices, grads)
 
         return loss, grad_center_vec, grad_outside_vec

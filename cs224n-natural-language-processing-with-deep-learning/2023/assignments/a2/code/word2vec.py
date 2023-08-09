@@ -165,8 +165,8 @@ def negSamplingLossAndGradient(
     gradCenterVec = -(delta@u).squeeze()                         # (1,n)
 
     gradOutsideVecs = np.zeros_like(outsideVectors)              # (m,n)
-    grads = -delta.T @ centerWordVec                             # (K+1,n)
-    grads[1:] *= -1                                              # (K+1,n)
+    grads = delta.T @ centerWordVec                              # (K+1,n)
+    grads[0] *= -1                                               # (K+1,n)
     np.add.at(gradOutsideVecs, indices, grads)
 
     ### END YOUR CODE

@@ -469,8 +469,8 @@ Caveat: So far we have looked at re-using quantities and approximating softmax w
     \begin{equation}
         \begin{align}
             \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm u_{w_s}}} &= - \frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot\frac{\partial{ \sigma(-\bm v_c\bm u_{w_s}^T)}}{\partial{\bm u_{w_s}}} \\
-            &= - \frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot \sigma(-\bm v_c\bm u_{w_s}^T) \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot \bm v_c \\
-            &= - \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right)^T \cdot \bm v_c
+            &= - \frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot \sigma(-\bm v_c\bm u_{w_s}^T) \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot (-\bm v_c) \\
+            &= \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right)^T \cdot \bm v_c
         \end{align}\label{eq:1g3}
     \end{equation}
 
@@ -490,7 +490,7 @@ Caveat: So far we have looked at re-using quantities and approximating softmax w
     \begin{equation}
         \begin{cases}
             \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm v_c}} & = -\delta \bm U_{o,\{w_1,\cdots,w_K\}}\\
-            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm U}} & = -\delta^T \bm v_c
+            \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm U}} & = \begin{bmatrix}-1 & 1 & \cdots & 1\end{bmatrix} \delta^T \bm v_c
         \end{cases}\label{eq:1g6}
     \end{equation}
 
@@ -528,8 +528,8 @@ Compute the partial derivative of $\bm J_{\text{neg-sample}}$ with respect to a 
     \begin{equation}
         \begin{align}
             \frac{\partial{J(\bm v_c,o,\bm U)}}{\partial{\bm u_{w_s}}} &= - \sum^K_{\substack{j=1\\w_j= w_s}}\frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot\frac{\partial{ \sigma(-\bm v_c\bm u_{w_s}^T)}}{\partial{\bm u_{w_s}}} \\
-            &= - \sum^K_{\substack{j=1\\w_j= w_s}}\frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot \sigma(-\bm v_c\bm u_{w_s}^T) \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot \bm v_c \\
-            &= - \sum^K_{\substack{j=1\\w_j= w_s}}\left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot \bm v_c
+            &= - \sum^K_{\substack{j=1\\w_j= w_s}}\frac{1}{ \sigma(-\bm v_c\bm u_{w_s}^T)}\cdot \sigma(-\bm v_c\bm u_{w_s}^T) \left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot (-\bm v_c) \\
+            &= \sum^K_{\substack{j=1\\w_j= w_s}}\left(1-\sigma(-\bm v_c\bm u_{w_s}^T)\right) \cdot \bm v_c
         \end{align}\label{eq:1h2}
     \end{equation}
 

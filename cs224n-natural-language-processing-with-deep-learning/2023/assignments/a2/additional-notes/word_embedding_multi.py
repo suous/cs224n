@@ -302,7 +302,6 @@ class SkipGram:
         grad_center_vec = -np.einsum("bok,bkn->bon", delta, u, optimize="greedy").sum(axis=1)
 
         grad_outside_vec = np.zeros_like(self.outside_word_vectors)  # (num_unique_words, vec_dim)
-        # grads = -delta.T @ center_word_vectors  # (k+1)*num_outside_words, vec_dim)
         grads = -np.einsum("bok,bon->bkn", delta, center_word_vectors, optimize="greedy")
         grads[:, num_outside_words:] *= -1  # (k+1)*num_outside_words, vec_dim)
         np.add.at(grad_outside_vec, indices, grads)
