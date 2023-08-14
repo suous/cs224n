@@ -18,7 +18,11 @@
                 	\btheta_{t+1} &\gets \btheta_t - \alpha \bm_{t+1}
                 }
                 where $\beta_1$ is a hyperparameter between 0 and 1 (often set to  0.9). Briefly explain in 2--4 sentences (you don't need to prove mathematically, just give an intuition) how using $\bm$ stops the updates from varying as much and why this low variance may be helpful to learning, overall.\newline
-              
+
+                \begin{enumerate}
+                    \item The momentum term $\bm$ behaves as an expotiential moving average of the gradients, which reduces the variance of the parameter updates and helps to maintain a consistent direction towards the minimum.
+                    \item SGD with momentum helps learning by smoothing out the updates to the model parameters. This smoothing effect helps the optimizer to avoid getting stuck in local minima and saddle points, and to converge faster to the global minimum of the loss landscape.
+                \end{enumerate}
                 
             \subpart[2] Adam extends the idea of {\it momentum} with the trick of {\it adaptive learning rates} by keeping track of  $\bv$, a rolling average of the magnitudes of the gradients:
                 \alns{
@@ -27,7 +31,12 @@
                 	\btheta_{t+1} &\gets \btheta_t - \alpha \bm_{t+1} / \sqrt{\bv_{t+1}}
                 }
                 where $\odot$ and $/$ denote elementwise multiplication and division (so $\bz \odot \bz$ is elementwise squaring) and $\beta_2$ is a hyperparameter between 0 and 1 (often set to  0.99). Since Adam divides the update by $\sqrt{\bv}$, which of the model parameters will get larger updates?  Why might this help with learning?
-                
+
+                \begin{enumerate}
+                    \item \textbf{Question 1:} The parameters with samller $\sqrt{v_{t+1}}$ will get larger updates. In other words, the parameters with smaller moving average of the squared gradients will get larger updates.
+                    \item \textbf{Question 2:} Adam uses adaptive learning rates to adaptively adjust the learning rate for each parameter. This helps to speed up the learning process by making larger updates to the parameters with smaller gradients, and smaller updates to the parameters with larger gradients.
+                    And because of the adaptive parameter updates, Adam usually converges faster than SGD with momentum, and is less sensitive to the choice of hyperparameters.
+                \end{enumerate}
            
                 
                 \end{subparts}
@@ -47,10 +56,27 @@
             \begin{subparts}
             \subpart[2]
                 What must $\gamma$ equal in terms of $p_{\text{drop}}$? Briefly justify your answer or show your math derivation using the equations given above.
+
+                \begin{align*} 
+                    \mathbb{E}{p_{\text{drop}}}[\bh_\text{drop}] &= \mathbb{E}{p_{\text{drop}}}[\gamma \bd \odot \bh] \\ 
+                    &= \gamma \mathbb{E}{p_{\text{drop}}}[\bd \odot \bh] \\
+                    &= \gamma \mathbb{E}{p_{\text{drop}}}[\bd] \odot \bh \\
+                    &= \gamma \times 1 \times (1-p_{\text{drop}}) \times \bh + \gamma \times 0 \times p_{\text{drop}} \times \bh \\
+                    &= \gamma (1-p_{\text{drop}}) \bh
+                \end{align*}
+
+                Therefore, $\gamma = 1/(1-p_{\text{drop}})$.  This ensures that the expected value of the activations is the same during training and evaluation.
+
                 
             
           \subpart[2] Why should dropout be applied during training? Why should dropout \textbf{NOT} be applied during evaluation? (Hint: it may help to look at the paper linked above in the write-up.) \newline
-          
+
+          \begin{enumerate}
+            \item Dropout should be applied during training to prevent overfitting and improve the generalization performance of the model.
+            \item By randomly dropping out units in each training iteration, dropout forces the remaining units to learn more robust and diverse features that are not dependent on the presence of any single unit.
+            \item Dropout also acts as a form of model averaging and ensembling, since the model is trained on different subsets of the units in each iteration.
+            \item Dropout should not be applied during evaluation because it would cause the model to make inconsistent and non-deterministic predictions for the same input.
+          \end{enumerate}
          
         \end{subparts}
 
