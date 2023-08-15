@@ -26,17 +26,29 @@ On each step, your parser will decide among the three transitions using a neural
     %\end{center}
     
     \begin{tabular}{ l | l | l | l}
-    Stack & Buffer & New dependency & Transition \\ \hline
-    [ROOT] & [I, attended, lectures, in, the, NLP, class] &  & Initial Configuration \\
-    $[$ROOT, I] & [attended, lectures, in, the, NLP, class] &  &  \texttt{SHIFT}  \\
-    $[$ROOT, I, attended] & [lectures, in, the, NLP, class] &  &  \texttt{SHIFT}  \\
-    $[$ROOT, attended] & [lectures, in, the, NLP, class] & attended$\to$I &  \texttt{LEFT-ARC}  \\
-    \end{tabular}\newline
+        Stack & Buffer & New dependency & Transition \\ \hline
+        [ROOT] & [I, attended, lectures, in, the, NLP, class] &  & Initial Configuration \\
+        $[$ROOT, I] & [attended, lectures, in, the, NLP, class] &  &  \texttt{SHIFT}  \\
+        $[$ROOT, I, attended] & [lectures, in, the, NLP, class] &  &  \texttt{SHIFT}  \\
+        $[$ROOT, attended] & [lectures, in, the, NLP, class] & attended$\to$I &  \texttt{LEFT-ARC}  \\
+        $[$ROOT, attended, lectures] & [in, the, NLP, class] & &  \texttt{SHIFT}  \\
+        $[$ROOT, attended] & [in, the, NLP, class] & attented$\to$lectures &  \texttt{RIGHT-ARC}  \\
+        $[$ROOT, attended, in] & [the, NLP, class] &  &  \texttt{SHIFT}  \\
+        $[$ROOT, attended, in, the] & [NLP, class] &  &  \texttt{SHIFT}  \\
+        $[$ROOT, attended, in, the, NLP] & [class] &  &  \texttt{SHIFT}  \\
+        $[$ROOT, attended, in, the, NLP, class] & [] &  &  \texttt{SHIFT}  \\
+        $[$ROOT, attended, in, the, class] & [] & class$\to$NLP &  \texttt{LEFT-ARC}  \\
+        $[$ROOT, attended, in, class] & [] & class$\to$the &  \texttt{LEFT-ARC}  \\
+        $[$ROOT, attended, class] & [] & class$\to$in &  \texttt{LEFT-ARC}  \\
+        $[$ROOT, attended] & [] & attended$\to$class &  \texttt{RIGHT-ARC}  \\
+        $[$ROOT] & [] & ROOT$\to$attended &  \texttt{RIGHT-ARC}  \\
+        \end{tabular}\newline
 
     
     \part[2] A sentence containing $n$ words will be parsed in how many steps (in terms of $n$)? Briefly explain in 1--2 sentences why.
 
-       
+    A transition-based parser needs to perform $2n$ (exclude the initial configuration step) steps to parse a sentence containing $n$ words. 
+    This is because each word requires two steps: a SHIFT operation to add it to the stack, and a REDUCE (LEFT-ARC or RIGHT-ARC) operation to combine it with other words in the stack. 
     
     \part[6] Implement the \texttt{\_\_init\_\_} and \texttt{parse\_step} functions in the \texttt{PartialParse} class in \texttt{parser\_transitions.py}. This implements the transition mechanics your parser will use. You can run basic (non-exhaustive) tests by running \texttt{python parser\_transitions.py part\_c}.
 
@@ -127,6 +139,15 @@ On each step, your parser will decide among the three transitions using a neural
             \item Working implementation of the functions for training in \texttt{run.py}. (We'll look at and run this code for grading).
             \item \textbf{Report the best UAS your model achieves on the dev set and the UAS it achieves on the test set in your writeup}.
     \end{itemize}
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.8\textwidth]{../code/cost_curve.png}
+        \caption{Cost Curve}
+        \label{fig:cost_curve}
+    \end{figure}
+
+    The best UAS on the dev set is \textbf{88.54}, and the best UAS on the test set is \textbf{88.69}.
     
 \part[12] We'd like to look at example dependency parses and understand where parsers like ours might be wrong. For example, in this sentence:
 
