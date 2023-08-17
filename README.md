@@ -14,6 +14,7 @@
 - [Assignment 3 (12%): Dependency parsing and neural network foundations](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a3)
   - [Code](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a3/code)
   - [Handout](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a3/handout)
+  - [Additional Notes](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a3/additional-notes)
 - [Assignment 4 (12%): Neural Machine Translation with sequence-to-sequence, attention, and subwords](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a4)
   - [Code](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a4/code)
   - [Handout](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a4/handout)

@@ -134,7 +134,14 @@ Note that this virtual environment \textbf{will not} be needed on the VM.\newlin
     First explain (in around three sentences) what effect the masks have on the entire attention computation.
     Then explain (in one or two sentences) why it is necessary to use the masks in this way.
 
-    \ifans{}
+    \ifans{
+    \begin{enumerate}
+        \item By setting the attention scores corresponding to the padding tokens to $-\infty$ before softmax, the softmax function will assign them a probability of 0.
+        This prevent the attention mechanism from attending to the padding tokens in the source sentence. 
+        \item It is necessary to use the masks in this way because the padding tokens do not contain any information about the source sentence, and the attention mechanism should not attend to the padding tokens in the source sentence. 
+        \item If the attention mechanism attends to the padding tokens, it will suffer from the noise introduced by the padding tokens, and it may not be able to learn the correct alignment between the source and target sentences.
+    \end{enumerate}
+    }
 \end{parts}
 
 Now it's time to get things running! As noted earlier, we recommend that you develop the code on your personal computer.  Confirm that you are running in the proper conda environment and then execute the following command to train the model on your local machine:
