@@ -216,7 +216,46 @@ In particular, you \textbf{do not} need to look at the labels on the the depende
 
 \input{dep_parses.tex}
 
+\begin{enumerate}
+    \item
+        \begin{itemize}
+        \item \textbf{Error type}: Verb Phrase Attachment Error
+        \item \textbf{Incorrect dependency}: acquisition $\rightarrow$ citing 
+        \item \textbf{Correct dependency}: blocked $\rightarrow$ citing
+        \end{itemize}
+
+    \item
+        \begin{itemize}
+        \item \textbf{Error type}: Modifier Attachment Error
+        \item \textbf{Incorrect dependency}: left $\rightarrow$ early 
+        \item \textbf{Correct dependency}: afternoon $\rightarrow$ early
+        \end{itemize}
+        
+    \item
+        \begin{itemize}
+        \item \textbf{Error type}: Prepositional Phrase Attachment Error
+        \item \textbf{Incorrect dependency}: declined $\rightarrow$ decisions 
+        \item \textbf{Correct dependency}: reasons $\rightarrow$ decision
+        \end{itemize}
+
+    \item
+        \begin{itemize}
+        \item \textbf{Error type}: Coordination Attachment Error:
+        \item \textbf{Incorrect dependency}: affects $\rightarrow$ one 
+        \item \textbf{Correct dependency}: plants $\rightarrow$ one
+        \end{itemize}
+    \end{enumerate}
+
 
 \part[2] Recall in part (e), the parser uses features which includes words and their part-of-speech (POS) tags. Explain the benefit of using part-of-speech tags as features in the parser?
+
+\begin{enumerate}
+    \item \textbf{Improved accuracy}: POS tags provide more information about the input, which can help the parser to make better predictions. For example, if we know that a word is a noun, we can predict that it is more likely to be the head of a verb than the head of a preposition.
+    \item \textbf{Reduced ambiguity}: POS tags reduce the ambiguity of words in context. For example, bank can be a noun or a verb, but if we know that it is a noun, we can reduce the number of possible meanings of the word.
+    \item \textbf{Efficient computation}: POS tags reduce the number of features that need to be considered. For example, if we know that a word is a noun, we can ignore features that are only relevant to verbs.
+    \item \textbf{Improved generalization}: POS tags provide a more abstract representation of the input than raw words, which can help the parser to generalize better to new, unseen data. For example, if we know that a word is a noun, we can generalize to other nouns that we have not seen before.
+\end{enumerate}
+
+Overall, using POS tags as features gives the parser more information about the input, which can help the parser to achieve higher accuracy and efficiency, and to better capture the syntactic structure of the input.
 
 \end{parts}
