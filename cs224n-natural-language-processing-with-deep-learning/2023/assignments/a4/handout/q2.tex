@@ -6,7 +6,13 @@
 
     \part[3] Look at the {\monofam{src.vocab}} file for some examples of phrases and words in the source language vocabulary. When encoding an input Mandarin Chinese sequence into ``pieces'' in the vocabulary, the tokenizer maps the sequence to a series of vocabulary items, each consisting of one or more characters (thanks to the {\monofam{sentencepiece}} tokenizer, we can perform this segmentation even when the original text has no white space). Given this information, how could adding a 1D Convolutional layer after the embedding layer and before passing the embeddings into the bidirectional encoder help our NMT system? \textbf{Hint:} each Mandarin Chinese character is either an entire word or a morpheme in a word. Look up the meanings of 电, 脑, and 电脑 separately for an example. The characters 电 (electricity) and  脑 (brain) when combined into the phrase 电脑 mean computer.
 
-    \ifans{}
+    \ifans{
+        The 1D Convolutional layer gives the MT system the ability to learn to recognize \textbf{local dependencies} and \textbf{specific compositions} between tokens.
+        For example, the 1D Convolutional layer can learn to recognize that the characters ``电'' and ``脑'' are often used together to form the word ``电脑'' (computer) rather than being used separately to mean ``electricity'' and ``brain'' respectively.
+        The CNN layer can also help the model to guess the meaning of tokens that it has never seen before.
+        For example, it may be able to recognize the words ``电视'' (television) and ``电话'' (telephone) as similar words (or have the same POS) to ``电脑'', since both words share the morpheme ``电'' (electricity). 
+        And it may be able to aware the token ``首'' (head) has a special meaning of ``first'' or ``chief'' when it is often used in the phrase ``首相'' (prime minister), ``首都'' (capital city), ``首脑'' (leader), ``首要'' (primary), etc.
+    }
 
 
     \part[8] Here we present a series of errors we found in the outputs of our NMT model (which is the same as the one you just trained). For each example of a reference (i.e., `gold') English translation, and NMT (i.e., `model') English translation, please:
@@ -25,7 +31,13 @@
         \textbf{Reference Translation:} \textit{\underline{the culprits were} subsequently arrested and convicted.}\newline
         \textbf{NMT Translation:} \textit{\underline{the culprit was} subsequently arrested and sentenced to theft.}
         
-        \ifans{}
+        \ifans{
+            \begin{itemize}
+                \item \textbf{Error}: The model uses the singular form of the word ``culprit'' instead of the plural form.
+                \item \textbf{Possible Reason}: The word ``贼人'' often appears in the training data as a singular word, so the model may have learned to use the singular form of the word. 
+                \item \textbf{Possible Fix}: We can try to add more training data to the model, so that it can learn to use the plural form of the word ``culprit''. 
+            \end{itemize}
+        }
 
 
         \subpart[2]
@@ -33,21 +45,39 @@
         \textbf{Reference Translation}: \textit{there is almost no space to accommodate these people, and resources have run out.   }\newline
         \textbf{NMT Translation}: \textit{the resources have been exhausted and \underline{resources have been exhausted}.}
         
-        \ifans{}
+        \ifans{
+            \begin{itemize}
+                \item \textbf{Error}: The model repeats the sentence ``resources have been exhausted''.
+                \item \textbf{Possible Reason}: The model gives significant attention to the second sentence in the source sentence, which is ``资源已经用尽'' (resources have been exhausted). 
+                \item \textbf{Possible Fix}: We can try to use a different attention mechanism, such as the Transformer's multi-head attention mechanism, which allows the model to attend to different parts of the source sentence at the same time. Or we can add more beam search candidates to the decoding process, which may help the model to find a better translation. Or we can introduce a penalty term to the loss function to prevent repeated translations.
+            \end{itemize}
+        }
 
         \subpart[2]
         \textbf{Source Sentence}: 当局已经宣布今天是国殇日。 \newline
         \textbf{Reference Translation}: \textit{authorities have announced \underline{a national mourning today.}}\newline
         \textbf{NMT Translation}: \textit{the administration has announced \underline{today's day.}}
         
-        \ifans{}
+        \ifans{
+            \begin{itemize}
+                \item \textbf{Error}: The model translates ``国殇日'' (national mourning day) as ``today's day''. 
+                \item \textbf{Possible Reason}: The model failed to recognize the word ``国殇日'' (national mourning day) as a noun phrase.
+                \item \textbf{Possible Fix}: Add more training data or increase the size of the vocabulary, so that the model can learn to recognize these specific noun phrases. 
+            \end{itemize}
+        }
         
         \subpart[2] 
         \textbf{Source Sentence\footnote{This is a Cantonese sentence! The data used in this assignment comes from GALE Phase 3, which is a compilation of news written in simplified Chinese from various sources scraped from the internet along with their translations. For more details, see \url{https://catalog.ldc.upenn.edu/LDC2017T02}. }:} 俗语有云:``唔做唔错"。\newline
         \textbf{Reference Translation:} \textit{\underline{`` act not, err not "}, so a saying goes.}\newline
         \textbf{NMT Translation:} \textit{as the saying goes, \underline{`` it's not wrong. "}}
         
-        \ifans{}
+        \ifans{
+            \begin{itemize}
+                \item \textbf{Error}: The model could not understand the Chinese idiom ``唔做唔错'' (act not, err not).
+                \item \textbf{Possible Reason}: The source sentence is extremely rare in the training data. The model failed to understand these type of domain-specific idioms.
+                \item \textbf{Possible Fix}: Provide more training data contains these type of domain-specific idioms. Or fine-tune the pre-trained model on the target domain.
+            \end{itemize}
+        }
     \end{subparts}
 
 
@@ -90,19 +120,91 @@
         
         Which of the two NMT translations is considered the better translation according to the BLEU Score? Do you agree that it is the better translation?
         
-        \ifans{}
+        \ifans{ \\
+            there is a need for adequate and predictable resources
+            \begin{itemize}
+                \item len(c): 9
+                \item len(r): 11
+                \item BP: 0.801
+                \item p1: 4/9= 0.444
+                \item p2: 3/8= 0.375
+                \item p3: 2/7= 0.286
+                \item BLEU: 0.327
+                \item NLTK BLEU: 0.869
+            \end{itemize}
+
+            resources be sufficient and predictable to
+            \begin{itemize}
+                \item len(c): 6
+                \item len(r): 6
+                \item BP: 1.000
+                \item p1: 6/6= 1.000
+                \item p2: 3/5= 0.600
+                \item p3: 1/4= 0.250
+                \item BLEU: 0.775
+                \item NLTK BLEU: 0.888
+            \end{itemize}
+
+            The second translation is considered better according to the BLEU score. 
+            I do not agree that it is the better translation. 
+            The first translation is more accurate and the second translation is not grammatically correct.
+        }
         
         \subpart[5] Our hard drive was corrupted and we lost Reference Translation $\br_1$. Please recompute BLEU scores for $\bc_1$ and $\bc_2$, this time with respect to $\br_2$ only. Which of the two NMT translations now receives the higher BLEU score? Do you agree that it is the better translation?
         
-        \ifans{}
+        \ifans{ \\
+            \begin{itemize}
+                \item there is a need for adequate and predictable resources
+                \item len(c): 9
+                \item len(r): 6
+                \item BP: 1.000
+                \item p1: 4/9= 0.444
+                \item p2: 3/8= 0.375
+                \item BLEU: 0.408
+                \item NLTK BLEU: 0.764
+            \end{itemize}
+
+            resources be sufficient and predictable to
+            \begin{itemize}
+                \item len(c): 6
+                \item len(r): 6
+                \item BP: 1.000
+                \item p1: 3/6= 0.500
+                \item p2: 1/5= 0.200
+                \item BLEU: 0.316
+                \item NLTK BLEU: 0.627
+            \end{itemize}
+            This time the first translation is considered better according to the BLEU score. 
+            I agree that it is the better translation. 
+        }
         
         \subpart[2] Due to data availability, NMT systems are often evaluated with respect to only a single reference translation. Please explain (in a few sentences) why this may be problematic. In your explanation, discuss how the BLEU score metric assesses the quality of NMT translations when there are multiple reference transitions versus a single reference translation.
         
-        \ifans{}
+        \ifans{
+            \begin{itemize}
+                \item NMT systems evaluated with respect to only a single reference translation may be problematic because the reference translation may vary remarkably from human judgements. And BLEU score depends only on single reference may have a huge difference if the reference translation is different. Therefore, it is hard to evaluate the quality of the translation.
+                \item NMT systems evaluated with respect to multiple reference transitions may be more accurate and robust because the modified $n$-gram precision $p_n$ is dependent on the maximum number of times it appears in any one reference translation, and the brevity penalty $BP$ is dependent on the length of the reference translation that is closest to the length of the candidate translation. This may reduce the impact of the diversity and bias of the reference translation.
+            \end{itemize}
+        }
         
         \subpart[2] List two advantages and two disadvantages of BLEU, compared to human evaluation, as an evaluation metric for Machine Translation. 
         
-        \ifans{}
+        \ifans{
+            \begin{itemize}
+                \item Advantages:
+                \begin{enumerate}
+                    \item BLEU is automatic, fast, cheap, scalable and easy to implement, and does not require human intervention.
+                    \item BLEU is language independent, and can be used for any language pair.
+                    \item BLEU is subjective ans consistent, while human evaluation is often objective.
+                \end{enumerate}
+                \item Disadvantages:
+                \begin{enumerate}
+                    \item BLEU depends on position independent $n$-gram precision, which is not robust and accurate enough, and may not reflect the fluency, adequency and fidelity of the translation.
+                    \item BLEU does not consider the overall meaning and the grammatical correctness of the translation, which is not consistent with human evaluation.
+                    \item BLEU often needs multiple reference translations, which is not always available.
+                \end{enumerate}
+            \end{itemize}
+        }
         
     \end{subparts}
 \end{parts}

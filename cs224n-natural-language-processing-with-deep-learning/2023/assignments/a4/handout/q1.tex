@@ -213,5 +213,20 @@ sh run.sh test
     \subpart[2] Explain one advantage and one disadvantage of \textit{additive attention} compared to multiplicative attention.
     \end{subparts}
             
-    \ifans{}
+    \ifans{
+        \begin{subparts}
+            \subpart{
+                \begin{itemize}
+                    \item Advantage: Dot product attention is \textbf{faster} and \textbf{more memory efficient} to compute than multiplicative attention because it does not require an additional matrix multiplication. And the matrix $\bW$ may have a large number of parameters according to the dimension of the hidden state, which may consume a lot of memory.
+                    \item Disvantage: Dot product attention can only learn a \textbf{hard} (or \textbf{fixed}) alignment between the source and target words because it lacks a learnable weight matrix $\bW$. In other words, Multiplicative attention can learn more complex attention distributions than dot product attention due to the additional learnable weight matrix. 
+                \end{itemize}
+            }
+            \subpart{
+                \begin{itemize}
+                    \item Advantage: Additive attention can learn \textbf{more complex} and \textbf{higher abstract} attention distributions than multiplicative attention because it has a additional feed-forward neural network layer, which introduce non-linearity to the attention distribution.
+                    \item Disvantage: Additive attention is \textbf{slower} to compute than multiplicative attention because it requires additional layer of computation. And it may suffer from the \textbf{valishing gradient} problem because of the activation function $\text{tanh}$.
+                \end{itemize}
+            }
+            \end{subparts}
+    }
 \end{parts}

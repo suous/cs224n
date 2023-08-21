@@ -169,3 +169,5 @@ datasets
 saved_*.npy
 saved_*.pickle
 results
+runs
+model.bin*

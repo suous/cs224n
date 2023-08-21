@@ -18,6 +18,7 @@
 - [Assignment 4 (12%): Neural Machine Translation with sequence-to-sequence, attention, and subwords](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a4)
   - [Code](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a4/code)
   - [Handout](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a4/handout)
+  - [Additional Notes](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a4/additional-notes)
 - [Assignment 5 (12%): Self-supervised learning and fine-tuning with Transformers](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a5)
   - [Code](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a5/code)
   - [Handout](cs224n-natural-language-processing-with-deep-learning/2023/assignments/a5/handout)
