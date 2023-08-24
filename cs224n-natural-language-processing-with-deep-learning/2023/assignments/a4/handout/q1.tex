@@ -218,13 +218,15 @@ sh run.sh test
             \subpart{
                 \begin{itemize}
                     \item Advantage: Dot product attention is \textbf{faster} and \textbf{more memory efficient} to compute than multiplicative attention because it does not require an additional matrix multiplication. And the matrix $\bW$ may have a large number of parameters according to the dimension of the hidden state, which may consume a lot of memory.
-                    \item Disvantage: Dot product attention can only learn a \textbf{hard} (or \textbf{fixed}) alignment between the source and target words because it lacks a learnable weight matrix $\bW$. In other words, Multiplicative attention can learn more complex attention distributions than dot product attention due to the additional learnable weight matrix. 
+                    \item Disadvantage: Dot product attention can only learn a \textbf{hard} (or \textbf{fixed}) alignment between the source and target words because it lacks a learnable weight matrix $\bW$. In other words, Multiplicative attention can learn more complex attention distributions than dot product attention due to the additional learnable weight matrix.
                 \end{itemize}
             }
             \subpart{
                 \begin{itemize}
-                    \item Advantage: Additive attention can learn \textbf{more complex} and \textbf{higher abstract} attention distributions than multiplicative attention because it has a additional feed-forward neural network layer, which introduce non-linearity to the attention distribution.
-                    \item Disvantage: Additive attention is \textbf{slower} to compute than multiplicative attention because it requires additional layer of computation. And it may suffer from the \textbf{valishing gradient} problem because of the activation function $\text{tanh}$.
+                    \item Advantage: Additive attention can learn \textbf{more complex} and \textbf{higher abstract} attention distributions than multiplicative attention because it has an additional feed-forward neural network layer, which introduce non-linearity to the attention distribution.
+                    \item Disadvantage: Additive attention is \textbf{slower} to compute than multiplicative attention because it requires additional layer of computation. And it may suffer from the \textbf{vanishing gradient} problem because of the activation function $\text{tanh}$.
+                    In addition, multiplicative attention $\be_{t,i} = \bs_t^T\bW\bh_i$ can be further decomposed into $\be_{t,i} = (\bU\bs_t)^T(\b_V\bh_i)$, which can reduce memory usage and simplify computation.
+                    Further more, multiplicative attention is more suitable for GPU implementation, because it is more parallelizable than additive attention. And it's easier to extent to multi-head attention.
                 \end{itemize}
             }
             \end{subparts}
