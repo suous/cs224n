@@ -31,8 +31,7 @@ def to_input_tensor(word_ids: List[List[int]]) -> torch.Tensor:
     >>> to_input_tensor([[1, 2, 3], [4, 5], [6]])
     tensor([[1, 2, 3], [4, 5, 0], [6, 0, 0]])
     """
-    sentences_t = pad_sentences(word_ids)
-    return torch.tensor(sentences_t, dtype=torch.long)
+    return torch.tensor(pad_sentences(word_ids), dtype=torch.long)
 
 
 def pad_sentences(sentences, pad_token=_default_word2id["<pad>"]):
@@ -73,8 +72,8 @@ def collate_fn(batch):
 
     Returns
     -------
-    Tuple[torch.Tensor, torch.Tensor]
-        tuple of tensors containing source and target sentences.
+    Tuple[torch.Tensor, torch.Tensor, list]
+        tuple of tensors containing source and target sentences and a list of source sentence lengths.
 
     Examples
     --------
@@ -82,7 +81,8 @@ def collate_fn(batch):
     (tensor([[1, 2, 3], [6, 0, 0]]), tensor([[4, 5, 0], [7, 8, 9]]))
     """
     src_sentences, tgt_sentences = zip(*batch)
-    return to_input_tensor(src_sentences), to_input_tensor(tgt_sentences)
+    source_lengths = [len(sent) for sent in src_sentences]
+    return to_input_tensor(src_sentences), to_input_tensor(tgt_sentences), source_lengths
 
 
 class VocabEntry(object):
