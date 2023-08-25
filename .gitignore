@@ -171,3 +171,6 @@ saved_*.pickle
 results
 runs
 model.bin*
+*.model.params*
+*.predictions
+expt
