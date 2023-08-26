@@ -68,7 +68,10 @@ if args.variant == 'vanilla':
     model = model.GPT(mconf).to(device)
 elif args.variant == 'perceiver':
     # set mconf.perceiver, and mconf.bottleneck_dim parameters appropriately.
-    pass # [part g] Make some other model here
+    # [part g] Make some other model here
+    mconf.perceiver = True
+    mconf.bottleneck_dim = args.bottleneck_dim
+    model = model.GPT(mconf).to(device)
 else:
     raise ValueError("Unknown model variant")
 
@@ -92,8 +95,27 @@ if args.function == 'pretrain':
     # warmup_tokens=512*20
     # final_tokens=200*len(pretrain_dataset)*block_size
     # num_workers=4
-    # writer=writer 
-    raise NotImplementedError
+    # writer=writer
+    tconf = trainer.TrainerConfig(
+        max_epochs=650,
+        batch_size=128,
+        learning_rate=args.finetune_lr,
+        lr_decay=True,
+        warmup_tokens=512*20,
+        final_tokens=200*len(pretrain_dataset)*block_size,
+        num_workers=0 if device == 'cpu' else 4,
+        writer=writer,
+    )
+
+    with open(args.pretrain_corpus_path, encoding='utf-8') as f:
+        train_dataset = dataset.CharCorruptionDataset(data=f.read(), block_size=block_size)
+    eval_dataset = None
+    if args.eval_corpus_path is not None:
+        with open(args.eval_corpus_path, encoding='utf-8') as f:
+            eval_dataset = dataset.CharCorruptionDataset(data=f.read(), block_size=block_size)
+
+    trainer.Trainer(model, train_dataset, eval_dataset, tconf).train()
+    torch.save(model.state_dict(), args.writing_params_path)
 elif args.function == 'finetune':
     assert args.writing_params_path is not None
     assert args.finetune_corpus_path is not None
@@ -146,15 +168,13 @@ elif args.function == 'finetune':
     )
 
     with open(args.finetune_corpus_path, encoding='utf-8') as f:
-        text = f.read()
-        finetune_dataset = dataset.NameDataset(pretraining_dataset=pretrain_dataset, data=text)
+        train_dataset = dataset.NameDataset(pretraining_dataset=pretrain_dataset, data=f.read())
     eval_dataset = None
     if args.eval_corpus_path is not None:
         with open(args.eval_corpus_path, encoding='utf-8') as f:
-            text = f.read()
-            eval_dataset = dataset.NameDataset(pretraining_dataset=pretrain_dataset, data=text)
+            eval_dataset = dataset.NameDataset(pretraining_dataset=pretrain_dataset, data=f.read())
 
-    trainer.Trainer(model, finetune_dataset, eval_dataset, tconf).train()
+    trainer.Trainer(model, train_dataset, eval_dataset, tconf).train()
     torch.save(model.state_dict(), args.writing_params_path)
 elif args.function == 'evaluate':
     assert args.outputs_path is not None

@@ -100,7 +100,12 @@ python src/run.py evaluate vanilla wiki.txt  \
 
 Training will take less than 10 minutes (on Azure).  Report your model's accuracy on the dev set (as printed by the second command above). Similar to assignment 4, we also have Tensorboard logging in assignment 5 for debugging. It can be launched using \texttt{tensorboard --logdir expt/}.  Don't be surprised if it is well below 10\%; we will be digging into why in Part 3. As a reference point, we want to also calculate the accuracy the model would have achieved if it had just predicted ``London'' as the birth place for everyone in the dev set. Fill in \texttt{london\_baseline.py} to calculate the accuracy of that approach and report your result in your write-up. You should be able to leverage existing code such that the file is only a few lines long. 
 
-\ifans{}
+\ifans{
+        \begin{itemize}
+                \item \textbf{Dev accuracy: } Correct: 7.0 out of 500.0: 1.4\%
+                \item \textbf{London baseline: } Correct: 25.0 out of 500.0: 5.0\%
+        \end{itemize}
+}
 
 
 \part[10]\textbf{Define a \textit{span corruption} function for pretraining.}\\
@@ -247,7 +252,12 @@ For this section, you'll submit: \texttt{perceiver.finetune.params}, \texttt{per
 \subpart[8]  We'll score your model as to whether it gets at least 5\% accuracy on the test set, which has answers held out.
 \subpart[2] Provide an expression for the time complexity of the Perceiver model and the vanilla model, in terms of number of layers ($L$), input sequence length ($\ell$) and basis bottleneck dimension ($m$). 
 
-\ifans{}
+\ifans{
+        \begin{itemize}
+                \item Vanilla model: $O(L\ell^2)$, where each layer is self attention layer with complexity $O(\ell^2)$.
+                \item Perceiver model: $O(2\ell m + (L-2)m^2)$, where $2$ layers of cross attention for down-projection and up-projection and $L-2$ layers of self attention with complexity $O(m^2)$.
+        \end{itemize}
+}
 
 
 \end{subparts}

@@ -168,7 +168,33 @@ class CharCorruptionDataset(Dataset):
 
     def __getitem__(self, idx):
         # TODO [part e]: see spec above
-        raise NotImplementedError
+        # 0. retrieve the element of self.data at the given index
+        document = self.data[idx]
+
+        # 1. Randomly truncate the document to a length [4, int(self.block_size*7/8)] characters.
+        truncated_length = random.randint(4, int(self.block_size*7/8))
+        document = document[:truncated_length]
+
+        # 2. Break the (truncated) document into three substrings.
+        mean_length = int(truncated_length/4)
+        masked_length = random.randint(int(mean_length/2), int(3*mean_length/2))
+        prefix_length = random.randint(0, truncated_length-masked_length)
+        prefix = document[:prefix_length]
+        masked_content = document[prefix_length:prefix_length+masked_length]
+        suffix = document[prefix_length+masked_length:]
+
+        # 3. Rearrange these substrings.
+        masked_string = prefix + self.MASK_CHAR + suffix + self.MASK_CHAR + masked_content
+        padding_length = max(0, self.block_size - len(masked_string))
+        masked_string = masked_string + self.PAD_CHAR*padding_length
+
+        # 4. Construct the input and output example pair.
+        x, y = masked_string[:-1], masked_string[1:]
+
+        # 5. Encode the resulting input and output strings as Long tensors.
+        x = torch.tensor([self.stoi[c] for c in x], dtype=torch.long)
+        y = torch.tensor([self.stoi[c] for c in y], dtype=torch.long)
+        return x, y
 
 """
 Code under here is strictly for your debugging purposes; feel free to modify
