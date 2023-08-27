@@ -156,6 +156,16 @@ python src/run.py evaluate vanilla wiki.txt  \
 
 Report the accuracy on the dev set (printed by the third command above). We expect the dev accuracy will be at least 10\%, and will expect a similar accuracy on the held out test set.
 
+\begin{figure}[h]
+        \centering
+        \includegraphics[width=0.5\textwidth]{../code/vanilla_training_process.png}
+        \caption{vanilla training process}
+        \label{fig:vanilla_training_process}
+\end{figure}
+
+\ifans{
+        Correct: 65.0 out of 500.0: 13.0\%
+}
 
 
 \part[10] \textbf{Research! Write and try out a more efficient variant of Attention (Budget 2 hours for pretraining!)}\\
@@ -250,6 +260,17 @@ For this section, you'll submit: \texttt{perceiver.finetune.params}, \texttt{per
 \begin{subparts}
 
 \subpart[8]  We'll score your model as to whether it gets at least 5\% accuracy on the test set, which has answers held out.
+\begin{figure}[h]
+        \centering
+        \includegraphics[width=0.5\textwidth]{../code/perceiver_training_process.png}
+        \caption{perceiver training process}
+        \label{fig:perceiver_training_process}
+\end{figure}
+
+\ifans{
+        Correct: 40.0 out of 500.0: 8.0\%
+}
+
 \subpart[2] Provide an expression for the time complexity of the Perceiver model and the vanilla model, in terms of number of layers ($L$), input sequence length ($\ell$) and basis bottleneck dimension ($m$). 
 
 \ifans{
@@ -268,7 +289,16 @@ For this section, you'll submit: \texttt{perceiver.finetune.params}, \texttt{per
 
 \part[1] Succinctly explain why the pretrained (vanilla) model was able to achieve an accuracy of above 10\%, whereas the non-pretrained model was not.
 
-\ifans{}
+\ifans{
+        \begin{enumerate}
+                \item The pretrained model has been trained on a large corpus of text data, which allows it to learn general language patterns and structures, 
+                and gives the model a better ituition about which part is ``person name'', which part is ``birth place'' and how they are related.
+                \item The vanilla model is trained on a small dataset, which unable to learn the patterns and structures of ``person name'' and ``birth place''.
+                Furthermore, the model cannot handle unseen person names and birth places, which is a common case in the evaluation and test set.
+                \item If ``person names'' and ``birth places'' are both have fixed vocabulary and fixed length, the vanilla model may achieve a higher accuracy.
+                Because the model can be simplified as a classification model, which can be trained on a small dataset.
+        \end{enumerate}
+}
 
 \part[2] Take a look at some of the correct predictions of the pretrain+finetuned vanilla model, as well as some of the errors.
 We think you'll find that it's impossible to tell, just looking at the output, whether the model \textit{retrieved} the correct birth place, or \textit{made up} an incorrect birth place.
@@ -276,6 +306,60 @@ Consider the implications of this for user-facing systems that involve pretraine
 Come up with two \textbf{distinct} reasons why this model behavior (i.e. unable to tell whether it's retrieved or made up) may cause concern for such applications, and an example for each reason.
 
 \ifans{
+        \begin{itemize}
+                \item The model may have memorized the association between a person name and a birth place, and may not have learned the underlying patterns in the data. 
+                For example: some places are extremely rare, such as ``Brunswick'', ``Canberra'', ``Stuttgart'', ``Wolverhampton'' and ``Milwaukee'' are only mentioned once in the training set, and the model made correct predictions for them.
+                The model may have memorized the association between a person name and a birth place, and may not have learned the underlying patterns in the data.
+                This may cause concern for applications that require the model to generalize to unseen data.
+                \item If the model is used in a user-facing system, the user may not be able to tell whether the model has retrieved or made up the answer. This may cause mislead the user into believing that the model is more accurate than it actually is.
+                For example: the model made correct predictions for name-place pairs which are extremely rare in the training set, but if the same name occurs in other places, the model may make wrong predictions.
+        \end{itemize}
+        
+        \begin{tabular}{llrr}
+                \toprule
+                 & targets & score & count \\
+                \midrule
+                0 & Athens & 0.333333 & 3 \\
+                1 & Baltimore & 0.166667 & 6 \\
+                2 & Berlin & 0.166667 & 6 \\
+                3 & Brunswick & 1.000000 & 1 \\
+                4 & Canberra & 1.000000 & 1 \\
+                5 & Charleston & 0.333333 & 3 \\
+                6 & Chicago & 0.357143 & 14 \\
+                7 & Copenhagen & 0.500000 & 2 \\
+                8 & Dresden & 1.000000 & 1 \\
+                9 & Dublin & 0.428571 & 7 \\
+                10 & England & 0.200000 & 10 \\
+                11 & France & 0.333333 & 6 \\
+                12 & Frankfurt & 0.500000 & 2 \\
+                13 & Glasgow & 0.333333 & 3 \\
+                14 & Helsinki & 0.333333 & 3 \\
+                15 & Kansas & 1.000000 & 1 \\
+                16 & Lawrence & 1.000000 & 1 \\
+                17 & Lebanon & 1.000000 & 1 \\
+                18 & London & 0.400000 & 25 \\
+                19 & Milwaukee & 1.000000 & 1 \\
+                20 & Minneapolis & 0.250000 & 4 \\
+                21 & Montreal & 0.333333 & 3 \\
+                22 & Naples & 0.333333 & 6 \\
+                23 & Oslo & 0.333333 & 6 \\
+                24 & Ottawa & 0.333333 & 3 \\
+                25 & Paris & 0.583333 & 12 \\
+                26 & Prague & 0.333333 & 3 \\
+                27 & Richmond & 0.500000 & 2 \\
+                28 & Rome & 1.000000 & 1 \\
+                29 & Savannah & 1.000000 & 1 \\
+                30 & Sheffield & 0.250000 & 4 \\
+                31 & Stuttgart & 1.000000 & 1 \\
+                32 & Sydney & 0.333333 & 6 \\
+                33 & Tokyo & 0.500000 & 2 \\
+                34 & Toledo & 0.500000 & 2 \\
+                35 & Toronto & 0.142857 & 7 \\
+                36 & Venice & 0.500000 & 2 \\
+                37 & Westminster & 1.000000 & 1 \\
+                38 & Wolverhampton & 1.000000 & 1 \\
+                \bottomrule
+                \end{tabular}
 }
 
 \part[2] If your model didn't see a person's name at pretraining time, and that person was not seen at fine-tuning time either, it is not possible for it to have ``learned'' where they lived.
@@ -283,7 +367,11 @@ Yet, your model will produce \textit{something} as a predicted birth place for t
 Concisely describe a strategy your model might take for predicting a birth place for that person's name, and one reason why this should cause concern for the use of such applications.
 (You do not need to submit the same answer for 3c as for 3b.)
 
-\ifans{}
+\ifans{
+        The model may retrieve a similar or related name from the training data, and output the birth place of that name, or output a birth place according to the context around, or just output a birth place randomly.
+        This will generate incorrect predictions for unseen names. 
+        Incorrect anwsers is more harmful than no answer, as it may mislead the users behaviors.
+}
 
 \end{parts}
 
