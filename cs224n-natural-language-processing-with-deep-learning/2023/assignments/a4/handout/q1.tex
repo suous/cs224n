@@ -203,8 +203,17 @@ sh run.sh test
 (Windows) run.bat test
 \end{lstlisting}
     Please report the model's corpus BLEU Score. It should be larger than 18.
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.5\textwidth]{../code/nmt_training_process.png}
+        \caption{nmt training process}
+        \label{fig:nmt_training_process}
+    \end{figure}
     
-    \ifans{}
+    \ifans{
+        Corpus BLEU: 20.390025088051356
+    }
     
     \part[4] (written) In class, we learned about dot product attention, multiplicative attention, and additive attention.  As a reminder, dot product attention is $\be_{t,i} = \bs_t^T\bh_i$, multiplicative attention is $\be_{t,i} = \bs_t^T\bW\bh_i$, and additive attention is $\be_{t,i} = \bv^T \text{tanh}(\bW_1\bh_i + \bW_2\bs_t)$.
     
