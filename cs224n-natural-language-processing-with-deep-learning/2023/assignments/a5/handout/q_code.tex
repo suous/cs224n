@@ -309,7 +309,6 @@ Come up with two \textbf{distinct} reasons why this model behavior (i.e. unable 
         \begin{itemize}
                 \item The model may have memorized the association between a person name and a birth place, and may not have learned the underlying patterns in the data. 
                 For example: some places are extremely rare, such as ``Brunswick'', ``Canberra'', ``Stuttgart'', ``Wolverhampton'' and ``Milwaukee'' are only mentioned once in the training set, and the model made correct predictions for them.
-                The model may have memorized the association between a person name and a birth place, and may not have learned the underlying patterns in the data.
                 This may cause concern for applications that require the model to generalize to unseen data.
                 \item If the model is used in a user-facing system, the user may not be able to tell whether the model has retrieved or made up the answer. This may cause mislead the user into believing that the model is more accurate than it actually is.
                 For example: the model made correct predictions for name-place pairs which are extremely rare in the training set, but if the same name occurs in other places, the model may make wrong predictions.
@@ -368,7 +367,7 @@ Concisely describe a strategy your model might take for predicting a birth place
 (You do not need to submit the same answer for 3c as for 3b.)
 
 \ifans{
-        The model may retrieve a similar or related name from the training data, and output the birth place of that name, or output a birth place according to the context around, or just output a birth place randomly.
+        The model may retrieve a similar or related name from the training data, and output the birth place of that name, or output a birth place according to the context around, or just output a place randomly.
         This will generate incorrect predictions for unseen names. 
         Incorrect anwsers is more harmful than no answer, as it may mislead the users behaviors.
 }
