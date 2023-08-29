@@ -1,0 +1,190 @@
+{
+	"name": "cs224n",
+	"build": { 
+		"context": "..",
+		"dockerfile": "Dockerfile"
+	},
+	"hostRequirements": {
+		"cpus": 4,
+		"memory": "8gb"
+	},
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/mamba-org/devcontainer-features/micromamba:1": {
+			"channels": "conda-forge",
+			"envFile": "/tmp/environment.yml"
+		},
+		"ghcr.io/devcontainers/features/common-utils:2": {},
+		"ghcr.io/devcontainers/features/sshd:1": {}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "eval \"$(micromamba shell hook --shell zsh)\"",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"workbench.colorTheme": "Default Dark Modern",
+				"terminal.integrated.defaultProfile.linux": "zsh",
+				"editor.inlineSuggest.enabled": true,
+				"editor.formatOnSave": false,
+				"[latex]": {
+					"editor.formatOnSave": false
+				},
+				"latex-workshop.latex.tools": [
+					{
+						"name": "xelatex",
+						"command": "xelatex",
+						"args": [
+							"-synctex=1",
+							"-shell-escape",
+							"-interaction=nonstopmode",
+							"-file-line-error",
+							"-aux-directory=out",
+							"-output-directory=out",
+							"%DOCFILE%"
+						]
+					},
+					{
+						"name": "pdflatex",
+						"command": "pdflatex",
+						"args": [
+							"-synctex=1",
+							"-shell-escape",
+							"-interaction=nonstopmode",
+							"-file-line-error",
+							"-aux-directory=out",
+							"-output-directory=out",
+							"%DOCFILE%"
+						]
+					},
+					{
+						"name": "latexmk",
+						"command": "latexmk",
+						"args": [
+							"-synctex=1",
+							"-shell-escape",
+							"-interaction=nonstopmode",
+							"-file-line-error",
+							"-pdf",
+							"-outdir=%OUTDIR%",
+							"-aux-directory=out",
+							"-output-directory=out",
+							"%DOCFILE%"
+						]
+					},
+					{
+						"name": "bibtex",
+						"command": "bibtex",
+						"args": [
+							"-aux-directory=out",
+							"-output-directory=out",
+							"%DOCFILE%"
+						]
+					}
+				],
+				"latex-workshop.latex.recipes": [
+					{
+						"name": "XeLaTeX",
+						"tools": [
+							"xelatex"
+						]
+					},
+					{
+						"name": "PDFLaTeX",
+						"tools": [
+							"pdflatex"
+						]
+					},
+					{
+						"name": "BibTeX",
+						"tools": [
+							"bibtex"
+						]
+					},
+					{
+						"name": "LaTeXmk",
+						"tools": [
+							"latexmk"
+						]
+					},
+					{
+						"name": "xelatex -> bibtex -> xelatex*2",
+						"tools": [
+							"xelatex",
+							"bibtex",
+							"xelatex",
+							"xelatex"
+						]
+					},
+					{
+						"name": "pdflatex -> bibtex -> pdflatex*2",
+						"tools": [
+							"pdflatex",
+							"bibtex",
+							"pdflatex",
+							"pdflatex"
+						]
+					},
+				],
+				"latex-workshop.latex.clean.fileTypes": [
+					"*.aux",
+					"*.bbl",
+					"*.blg",
+					"*.idx",
+					"*.ind",
+					"*.lof",
+					"*.lot",
+					"*.out",
+					"*.toc",
+					"*.acn",
+					"*.acr",
+					"*.alg",
+					"*.glg",
+					"*.glo",
+					"*.gls",
+					"*.fls",
+					"*.log",
+					"*.fdb_latexmk",
+					"*.snm",
+					"*.synctex(busy)",
+					"*.synctex.gz(busy)",
+					"*.nav",
+					"*.vrb",
+					"*.gz", // Added Manually
+					"*.bcf", // Added Manually
+					"*.nlo", // Added Manually
+					"*.run.xml" // Added Manually
+				],
+				// Edit the following property to change export directory
+				"latex-workshop.latex.outDir": "./out",
+				"latex-workshop.latex.autoClean.run": "onBuilt",
+				"latex-workshop.latex.autoBuild.run": "onSave",
+				"latex-workshop.latex.build.forceRecipeUsage": false,
+				"latex-workshop.synctex.afterBuild.enabled": true,
+				"latex-workshop.view.pdf.viewer": "tab",
+				"latex-workshop.latex.clean.subfolder.enabled": true,
+				"latex-workshop.latex.magic.args": [
+					"-output-directory=PDF", // to change the output directory
+					"%DOC%"
+				]
+			},
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"James-Yu.latex-workshop",
+				"ms-python.python",
+				"ms-toolsai.jupyter",
+				"vscodevim.vim"
+			]
+		}
+	}
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}
